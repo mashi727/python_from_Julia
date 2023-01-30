@@ -6,19 +6,21 @@ import pyqtgraph as pg
 import numpy as np
 import sys
 
-
-
 def main(plot_data_x, plot_data_y, plot_data_z):
-    app = QtWidgets.QApplication.instance()
-    if app is None:
-        app = QtWidgets.QApplication(sys.argv)
+    app = pg.mkQApp()
+    mw = QtWidgets.QMainWindow()
+    mw.setWindowTitle(u'Julia+PyQtGraph サンプルです')
+    mw.resize(1280,768) #Window size
+
+    cw = QtWidgets.QWidget()
+    button = QtWidgets.QPushButton("Quit")
+
+    mw.setCentralWidget(cw)
+    l = QtWidgets.QVBoxLayout()
 
     w = gl.GLViewWidget()
-    w.resize(600,400)
+    #w.resize(600,400)
     w.opts['distance'] = 40
-    w.show()
-    w.setWindowTitle(u'Julia+PyQtGraph サンプル')
-
     x = plot_data_x
     y = plot_data_y
     for i in range(len(y)):
@@ -27,8 +29,21 @@ def main(plot_data_x, plot_data_y, plot_data_z):
         pts = np.vstack([x,yi,z]).transpose()
         plt = gl.GLLinePlotItem(pos=pts, color=pg.glColor((i,len(y)*1.3)), width=(i+1)/10., antialias=True)
         w.addItem(plt)
+    
+    l.addWidget(w)
+    l.addWidget(button)
 
-    app.exec()
+
+    def clicked():
+        mw.close()
+
+    button.clicked.connect(clicked)
+
+    cw.setLayout(l)
+    mw.show()
+    pg.exec()
+
+
 
 if __name__ == '__main__':
     main(plot_data_x, plot_data_y, plot_data_z)
